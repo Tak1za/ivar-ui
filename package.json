@@ -10,14 +10,6 @@
     "preview": "vite preview",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "*.{js, jsx,ts,tsx}": [
-      "eslint --quiet --fix"
-    ],
-    "*.{json,js,ts,jsx,tsx,html}": [
-      "prettier --write --ignore-unknown"
-    ]
-  },
   "dependencies": {
     "@clerk/clerk-react": "^4.30.7",
     "@clerk/themes": "^1.7.9",
