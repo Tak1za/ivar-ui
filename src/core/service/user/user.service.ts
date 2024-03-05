@@ -1,6 +1,6 @@
 export class UserService {
   createUser = (id: string, username: string) => {
-    return fetch("http://localhost:8080/api/v1/users", {
+    return fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
