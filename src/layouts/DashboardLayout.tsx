@@ -5,6 +5,7 @@ import { useCreateUser } from '@/core/service/user/use-create-user';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/ui/icons';
 
 export default function DashboardLayout() {
   const { isLoaded, signOut } = useAuth();
@@ -25,7 +26,16 @@ export default function DashboardLayout() {
     }
   }, [isError, isLoading]);
 
-  if (!isLoaded || isLoading) return 'Loading...';
+  if (!isLoaded || isLoading) {
+    return (
+      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
+        <div className='flex flex-row gap-2 place-items-center'>
+          <Icons.spinner className='animate-spin h-10'></Icons.spinner>
+          <p>Hold on while we log you in...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
