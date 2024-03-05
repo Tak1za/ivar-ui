@@ -1,20 +1,31 @@
-import * as React from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useEffect } from "react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useCreateUser } from "@/core/service/user/use-create-user";
 
 export default function DashboardLayout() {
-  const { userId, isLoaded } = useAuth();
+  const { isLoaded, signOut } = useAuth();
+  const { user } = useUser();
   const navigate = useNavigate();
 
-  console.log("test", userId);
+  const { isLoading, isError } = useCreateUser(
+    user?.id ?? "",
+    user?.username ?? ""
+  );
 
-  React.useEffect(() => {
-    if (!userId) {
+  useEffect(() => {
+    if (!user) {
       navigate("/sign-in");
     }
-  }, [navigate, userId]);
+  }, [navigate, user]);
 
-  if (!isLoaded) return "Loading...";
+  useEffect(() => {
+    if (isError && !isLoading) {
+      signOut();
+    }
+  }, [isError, isLoading]);
+
+  if (!isLoaded || isLoading) return "Loading...";
 
   return <Outlet />;
 }
