@@ -12,7 +12,7 @@ export default function DashboardLayout() {
     if (!userId) {
       navigate("/sign-in");
     }
-  }, []);
+  }, [navigate, userId]);
 
   if (!isLoaded) return "Loading...";
 

@@ -4,7 +4,6 @@ import {
   SignOutButton,
   SignedIn,
   SignedOut,
-  UserButton,
 } from "@clerk/clerk-react";
 import { dark } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
