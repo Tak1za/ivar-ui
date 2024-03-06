@@ -43,7 +43,7 @@ export default function DashboardLayout() {
             <Icons.spinner className='animate-spin h-10'></Icons.spinner>
             <p>Hold on while we log you in...</p>
           </div>
-          <p className='text-sm text-muted-foreground -ml-3 font-bold'>
+          <p className='text-sm text-muted-foreground -ml-4 font-bold'>
             FACT: Good things happen to those who wait
           </p>
         </div>
