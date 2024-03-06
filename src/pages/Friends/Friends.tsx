@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
 
 export default function FriendsPage() {
+  useIsLoggedIn();
+
   return (
     <div className='flex flex-col h-full justify-start'>
       <div className='flex h-14 items-center shadow-topbar justify-between gap-2'>

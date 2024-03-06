@@ -24,12 +24,6 @@ export default function DashboardLayout() {
   const { isLoading, isError } = useCreateUser(user?.id ?? '', user?.username ?? '');
 
   useEffect(() => {
-    if (!user) {
-      navigate('/sign-in');
-    }
-  }, [navigate, user]);
-
-  useEffect(() => {
     if (isError && !isLoading) {
       signOut();
     }
