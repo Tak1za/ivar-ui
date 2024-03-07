@@ -11,4 +11,6 @@ export function useIsLoggedIn() {
       navigate('/sign-in');
     }
   }, [user]);
+
+  return user;
 }
