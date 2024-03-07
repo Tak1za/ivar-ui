@@ -21,15 +21,21 @@ export default function DashboardLayout() {
   const location = useLocation();
   const { isLoaded, signOut } = useAuth();
   const { user } = useUser();
-  const { isLoading, isError } = useCreateUser(user?.id ?? '', user?.username ?? '');
+  const { mutate: createUser, isPending, isError } = useCreateUser();
 
   useEffect(() => {
-    if (isError && !isLoading) {
+    if (user && user.username) {
+      createUser({ id: user.id, username: user.username });
+    }
+  }, [user, user?.username, createUser]);
+
+  useEffect(() => {
+    if (isError && !isPending) {
       signOut();
     }
-  }, [isError, isLoading]);
+  }, [isError, isPending, signOut]);
 
-  if (!isLoaded || isLoading) {
+  if (!isLoaded || isPending) {
     return (
       <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
         <div className='flex flex-col gap-2'>
@@ -62,7 +68,7 @@ export default function DashboardLayout() {
           <div className='bg-secondary h-16 flex flex-shrink items-center px-3 justify-between'>
             <div className='flex flex-row items-center gap-2'>
               <Avatar>
-                <AvatarImage src='https://github.com/shadcn.png' />
+                <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
               </Avatar>
               <div className='flex flex-col'>
                 <div>{user?.username}</div>

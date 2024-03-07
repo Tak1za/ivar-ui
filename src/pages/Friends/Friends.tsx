@@ -1,11 +1,16 @@
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { FriendRequest } from '@/core/models/get-friend-request.interface';
 import { useGetPendingFriendRequests } from '@/core/service/user/use-get-pending-friend-requests';
 import { useSendFriendRequest } from '@/core/service/user/use-send-friend-request';
+import { useUpdateFriendRequest } from '@/core/service/user/use-update-friend-request';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
 import React from 'react';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 type Filter = 'all' | 'pending' | 'add-friend';
 
@@ -13,12 +18,9 @@ export default function FriendsPage() {
   const user = useIsLoggedIn();
   const [friendToAdd, setFriendToAdd] = useState('');
 
-  const { refetch: sendFriendRequest, isSuccess } = useSendFriendRequest(
-    user?.username,
-    friendToAdd
-  );
-  const { refetch: getPendingFriendRequests, data: pendingFriendRequests } =
-    useGetPendingFriendRequests(user?.username);
+  const { mutate: sendFriendRequest, isError, isSuccess } = useSendFriendRequest();
+  const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.username);
+  const { mutate: updateFriendRequest } = useUpdateFriendRequest();
 
   const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
 
@@ -27,16 +29,14 @@ export default function FriendsPage() {
   };
 
   const handleSendFriendRequest = () => {
-    if (friendToAdd) {
-      sendFriendRequest();
+    if (friendToAdd && user && user.username) {
+      sendFriendRequest({ userA: user.username, userB: friendToAdd });
     }
   };
 
-  useEffect(() => {
-    if (selectedFilter === 'pending') {
-      getPendingFriendRequests();
-    }
-  }, [selectedFilter]);
+  const handleUpdateFriendRequest = (id: number, accept: boolean) => {
+    updateFriendRequest({ id, accept });
+  };
 
   return (
     <div className='flex flex-col h-full justify-start'>
@@ -65,7 +65,7 @@ export default function FriendsPage() {
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-      <div className='flex flex-grow overflow-y-auto my-4 mr-1 pr-1 pl-2 flex-col'>
+      <div className='flex flex-grow overflow-y-auto my-4 px-4 flex-col'>
         {selectedFilter === 'add-friend' && (
           <React.Fragment>
             <div className='text-md'>ADD FRIEND</div>
@@ -76,7 +76,7 @@ export default function FriendsPage() {
               <Input
                 type='text'
                 placeholder='Enter a username to add.'
-                className={`flex-grow ${isSuccess && 'border-green-600'}`}
+                className={`flex-grow ${!isError && isSuccess && 'border-green-600'}`}
                 value={friendToAdd}
                 onChange={handleInputChange}
               />
@@ -84,19 +84,69 @@ export default function FriendsPage() {
                 Send Request
               </Button>
             </div>
-            {isSuccess && (
+            {!isError && isSuccess && (
               <p className='text-green-600 ml-1 mt-1'>Your request was sent successfully</p>
             )}
           </React.Fragment>
         )}
         {selectedFilter === 'pending' && (
           <React.Fragment>
-            <div className='text-sm text-muted-foreground'>
-              PENDING
-              {pendingFriendRequests?.data?.length !== 0
-                ? ` - ${pendingFriendRequests?.data?.length}`
-                : ''}
-            </div>
+            <React.Fragment>
+              <div className='text-sm text-muted-foreground'>
+                {pendingFriendRequests?.data?.length && pendingFriendRequests?.data?.length > 0 ? (
+                  `PENDING - ${pendingFriendRequests?.data?.length}`
+                ) : (
+                  <p>There are no pending requests for now.</p>
+                )}
+              </div>
+
+              <div className='my-4 flex flex-col gap-6'>
+                {pendingFriendRequests?.data?.map((item: FriendRequest) => {
+                  return (
+                    <div className='flex flex-row justify-between items-center' key={item?.id}>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <Avatar>
+                          <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                        </Avatar>
+                        <div className='flex flex-col'>
+                          <div>{item?.userA === user?.username ? item?.userB : item?.userA}</div>
+                          <div className='text-xs text-muted-foreground'>
+                            {item?.userA === user?.username
+                              ? 'Outgoing friend request'
+                              : 'Incoming friend request'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row gap-2'>
+                        {item?.userA === user?.username && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Avatar className='bg-primary-foreground items-center justify-center cursor-pointer'>
+                                <Icons.cancel className='hover:text-red-600' aria-label='Cancel' />
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>Cancel</TooltipContent>
+                          </Tooltip>
+                        )}
+                        {item?.userA !== user?.username && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Avatar
+                                className='bg-primary-foreground items-center justify-center cursor-pointer'
+                                onClick={() => handleUpdateFriendRequest(item?.id, true)}
+                              >
+                                <Icons.check className='hover:text-green-600' aria-label='Accept' />
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>Accept</TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </React.Fragment>
           </React.Fragment>
         )}
       </div>

@@ -4,8 +4,8 @@ import { UserService } from './user.service';
 export const useGetPendingFriendRequests = (userA?: string | null) => {
   const userService = new UserService();
   return useQuery({
-    queryKey: ['user', userA],
+    queryKey: ['friend-requests', userA],
     queryFn: () => userService.getPendingFriendRequests(userA),
-    enabled: false
+    enabled: !!userA
   });
 };
