@@ -26,4 +26,15 @@ export class UserService {
       return console.error(e);
     }
   };
+
+  getPendingFriendRequests = async (userA?: string | null) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/${userA}`, {
+        method: 'GET'
+      });
+      return res.json();
+    } catch (e) {
+      return console.error(e);
+    }
+  };
 }
