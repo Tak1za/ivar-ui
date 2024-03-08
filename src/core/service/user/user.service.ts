@@ -36,9 +36,12 @@ export class UserService {
     userA?: string | null
   ): Promise<{ data: FriendRequest[] } | void> => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/${userA}`, {
-        method: 'GET'
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/requests/${userA}`,
+        {
+          method: 'GET'
+        }
+      );
       return res.json();
     } catch (e) {
       return console.error(e);
@@ -54,6 +57,17 @@ export class UserService {
         },
         body: JSON.stringify({ id: id, status: accept ? 1 : 2 })
       });
+    } catch (e) {
+      return console.error(e);
+    }
+  };
+
+  getFriends = async (userA?: string | null): Promise<{ data: string[] } | void> => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/${userA}`, {
+        method: 'GET'
+      });
+      return res.json();
     } catch (e) {
       return console.error(e);
     }

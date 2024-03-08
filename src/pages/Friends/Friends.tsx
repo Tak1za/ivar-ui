@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FriendRequest } from '@/core/models/get-friend-request.interface';
+import { useGetFriends } from '@/core/service/user/use-get-friends';
 import { useGetPendingFriendRequests } from '@/core/service/user/use-get-pending-friend-requests';
 import { useSendFriendRequest } from '@/core/service/user/use-send-friend-request';
 import { useUpdateFriendRequest } from '@/core/service/user/use-update-friend-request';
@@ -20,6 +21,7 @@ export default function FriendsPage() {
 
   const { mutate: sendFriendRequest, isError, isSuccess } = useSendFriendRequest();
   const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.username);
+  const { data: friends } = useGetFriends(user?.username);
   const { mutate: updateFriendRequest } = useUpdateFriendRequest();
 
   const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
@@ -139,6 +141,48 @@ export default function FriendsPage() {
                               </Avatar>
                             </TooltipTrigger>
                             <TooltipContent>Accept</TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </React.Fragment>
+          </React.Fragment>
+        )}
+        {selectedFilter === 'all' && (
+          <React.Fragment>
+            <React.Fragment>
+              <div className='text-sm text-muted-foreground'>
+                {friends?.data?.length && friends?.data?.length > 0 ? (
+                  `FRIENDS - ${friends?.data?.length}`
+                ) : (
+                  <p>There are no friends for now.</p>
+                )}
+              </div>
+
+              <div className='my-4 flex flex-col gap-6'>
+                {friends?.data?.map((friend: string) => {
+                  return (
+                    <div className='flex flex-row justify-between items-center' key={friend}>
+                      <div className='flex flex-row gap-2 items-center'>
+                        <Avatar>
+                          <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                        </Avatar>
+                        <div className='flex flex-col'>
+                          <div>{friend}</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row gap-2'>
+                        {friend && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Avatar className='bg-primary-foreground items-center justify-center cursor-pointer'>
+                                <Icons.cancel className='hover:text-red-600' aria-label='Remove' />
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>Remove</TooltipContent>
                           </Tooltip>
                         )}
                       </div>
