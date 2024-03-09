@@ -176,7 +176,10 @@ export default function FriendsPage() {
               <div className='my-4 flex flex-col gap-6'>
                 {friends?.data?.map((friend: string) => {
                   return (
-                    <div className='flex flex-row justify-between items-center' key={friend}>
+                    <div
+                      className='flex flex-row justify-between items-center hover:bg-secondary rounded-sm p-2'
+                      key={friend}
+                    >
                       <div className='flex flex-row gap-2 items-center'>
                         <Avatar>
                           <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
@@ -186,6 +189,22 @@ export default function FriendsPage() {
                         </div>
                       </div>
                       <div className='flex flex-row gap-2'>
+                        {friend && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Avatar
+                                className='bg-primary-foreground items-center justify-center cursor-pointer'
+                                onClick={() => handleRemoveFriend(friend)}
+                              >
+                                <Icons.message
+                                  className='hover:text-muted-foreground'
+                                  aria-label='Remove'
+                                />
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>Message</TooltipContent>
+                          </Tooltip>
+                        )}
                         {friend && (
                           <Tooltip>
                             <TooltipTrigger asChild>
