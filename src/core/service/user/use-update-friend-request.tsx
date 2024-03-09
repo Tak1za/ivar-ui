@@ -9,6 +9,7 @@ export const useUpdateFriendRequest = () => {
     mutationFn: (data: updateFriendRequest) => userService.updateFriendRequest(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['friends'] });
     }
   });
 };

@@ -35,6 +35,7 @@ export default function FriendsPage() {
   const handleSendFriendRequest = () => {
     if (friendToAdd && user && user.username) {
       sendFriendRequest({ userA: user.username, userB: friendToAdd });
+      setFriendToAdd('');
     }
   };
 
@@ -128,16 +129,6 @@ export default function FriendsPage() {
                         </div>
                       </div>
                       <div className='flex flex-row gap-2'>
-                        {item?.userA === user?.username && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Avatar className='bg-primary-foreground items-center justify-center cursor-pointer'>
-                                <Icons.cancel className='hover:text-red-600' aria-label='Cancel' />
-                              </Avatar>
-                            </TooltipTrigger>
-                            <TooltipContent>Cancel</TooltipContent>
-                          </Tooltip>
-                        )}
                         {item?.userA !== user?.username && (
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -151,6 +142,18 @@ export default function FriendsPage() {
                             <TooltipContent>Accept</TooltipContent>
                           </Tooltip>
                         )}
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Avatar
+                              className='bg-primary-foreground items-center justify-center cursor-pointer'
+                              onClick={() => handleRemoveFriend(item?.userB)}
+                            >
+                              <Icons.cancel className='hover:text-red-600' aria-label='Cancel' />
+                            </Avatar>
+                          </TooltipTrigger>
+                          <TooltipContent>Cancel</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   );
