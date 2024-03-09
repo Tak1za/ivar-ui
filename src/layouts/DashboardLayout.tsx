@@ -56,7 +56,7 @@ export default function DashboardLayout() {
       <div className='h-full w-16 bg-secondary'></div>
       <div className='h-full w-56 bg-primary-foreground'>
         <div className='flex flex-col justify-between h-full'>
-          <div className='flex-grow p-2'>
+          <div className='flex-grow p-2 flex flex-col'>
             <div
               className={`flex flex-row gap-2 items-center py-2 px-4 rounded-md hover:bg-secondary hover:cursor-pointer ${location.pathname === '/friends' ? 'bg-secondary' : ''}`}
               onClick={() => navigate('/friends')}
@@ -64,6 +64,7 @@ export default function DashboardLayout() {
               <Icons.friends />
               <p>Friends</p>
             </div>
+            <div className='text-xs text-muted-foreground mt-2 uppercase'>Direct Messages</div>
           </div>
           <div className='bg-secondary h-16 flex flex-shrink items-center px-3 justify-between'>
             <div className='flex flex-row items-center gap-2'>

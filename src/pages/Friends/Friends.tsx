@@ -111,7 +111,7 @@ export default function FriendsPage() {
                 )}
               </div>
 
-              <div className='my-4 flex flex-col gap-6'>
+              <div className='my-4 flex flex-col gap-3'>
                 {pendingFriendRequests?.data?.map((item: FriendRequest) => {
                   return (
                     <div className='flex flex-row justify-between items-center' key={item?.id}>
@@ -173,7 +173,7 @@ export default function FriendsPage() {
                 )}
               </div>
 
-              <div className='my-4 flex flex-col gap-6'>
+              <div className='my-4 flex flex-col gap-3'>
                 {friends?.data?.map((friend: string) => {
                   return (
                     <div
