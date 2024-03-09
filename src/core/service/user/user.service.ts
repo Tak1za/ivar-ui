@@ -1,4 +1,5 @@
 import { CreateUserRequest } from '@/core/models/create-user.interface';
+import { RemoveFriendRequest } from '@/core/models/remove-friend.interface';
 import { FriendRequest } from '@/core/models/get-friend-request.interface';
 import { SendFriendRequest } from '@/core/models/send-friend-request.interface';
 import { updateFriendRequest } from '@/core/models/update-friend-request.interface';
@@ -68,6 +69,20 @@ export class UserService {
         method: 'GET'
       });
       return res.json();
+    } catch (e) {
+      return console.error(e);
+    }
+  };
+
+  removeFriend = async (data: RemoveFriendRequest) => {
+    try {
+      return await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends`, {
+        method: 'DELETE',
+        body: JSON.stringify({
+          usernameA: data.usernameA,
+          usernameB: data.usernameB
+        })
+      });
     } catch (e) {
       return console.error(e);
     }

@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { FriendRequest } from '@/core/models/get-friend-request.interface';
 import { useGetFriends } from '@/core/service/user/use-get-friends';
 import { useGetPendingFriendRequests } from '@/core/service/user/use-get-pending-friend-requests';
+import { useRemoveFriend } from '@/core/service/user/use-remove-friend';
 import { useSendFriendRequest } from '@/core/service/user/use-send-friend-request';
 import { useUpdateFriendRequest } from '@/core/service/user/use-update-friend-request';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
@@ -23,6 +24,7 @@ export default function FriendsPage() {
   const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.username);
   const { data: friends } = useGetFriends(user?.username);
   const { mutate: updateFriendRequest } = useUpdateFriendRequest();
+  const { mutate: removeFriendRequest } = useRemoveFriend();
 
   const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
 
@@ -38,6 +40,12 @@ export default function FriendsPage() {
 
   const handleUpdateFriendRequest = (id: number, accept: boolean) => {
     updateFriendRequest({ id, accept });
+  };
+
+  const handleRemoveFriend = (usernameB: string) => {
+    if (user && user.username && usernameB) {
+      removeFriendRequest({ usernameA: user.username, usernameB: usernameB });
+    }
   };
 
   return (
@@ -178,7 +186,10 @@ export default function FriendsPage() {
                         {friend && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Avatar className='bg-primary-foreground items-center justify-center cursor-pointer'>
+                              <Avatar
+                                className='bg-primary-foreground items-center justify-center cursor-pointer'
+                                onClick={() => handleRemoveFriend(friend)}
+                              >
                                 <Icons.cancel className='hover:text-red-600' aria-label='Remove' />
                               </Avatar>
                             </TooltipTrigger>
