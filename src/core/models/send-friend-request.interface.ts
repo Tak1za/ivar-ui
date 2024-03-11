@@ -1,4 +1,4 @@
 export interface SendFriendRequest {
-  userA: string;
-  userB: string;
+  usernameA: string;
+  usernameB: string;
 }

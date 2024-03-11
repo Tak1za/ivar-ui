@@ -9,6 +9,7 @@ import SignUpPage from './pages/SignUp/SignUp.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import FriendsPage from './pages/Friends/Friends.tsx';
+import Chat from './pages/Chat/Chat.tsx';
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,16 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <DashboardLayout />,
-        children: [{ path: 'friends', element: <FriendsPage /> }]
+        children: [
+          {
+            path: 'friends',
+            element: <FriendsPage />
+          },
+          {
+            path: 'chat/:username',
+            element: <Chat />
+          }
+        ]
       },
       { path: '/sign-in', element: <SignInPage /> },
       { path: '/sign-up', element: <SignUpPage /> }

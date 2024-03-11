@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCreateUser } from '@/core/service/user/use-create-user';
@@ -15,6 +15,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -22,10 +23,28 @@ export default function DashboardLayout() {
   const { isLoaded, signOut } = useAuth();
   const { user } = useUser();
   const { mutate: createUser, isPending, isError } = useCreateUser();
+  const [socketUrl, setSocketUrl] = useState<string>('');
+
+  const { readyState, sendJsonMessage } = useWebSocket(socketUrl, {
+    onOpen: () => console.log('opened'),
+    shouldReconnect: () => true
+  });
+
+  const handleChangeSocketUrl = useCallback(
+    (userId: string) => setSocketUrl(`${import.meta.env.VITE_SERVICE_WS_URL}/ws/${userId}`),
+    []
+  );
+
+  useEffect(() => {
+    if (readyState === ReadyState.OPEN) {
+      sendJsonMessage({ sender: 'user1', recipient: 'user2', content: 'testing' });
+    }
+  }, [readyState]);
 
   useEffect(() => {
     if (user && user.username) {
       createUser({ id: user.id, username: user.username });
+      handleChangeSocketUrl(user.id);
     }
   }, [user, user?.username, createUser]);
 

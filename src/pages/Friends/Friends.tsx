@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FriendRequest } from '@/core/models/get-friend-request.interface';
+import { User } from '@/core/models/user.interface';
 import { useGetFriends } from '@/core/service/user/use-get-friends';
 import { useGetPendingFriendRequests } from '@/core/service/user/use-get-pending-friend-requests';
 import { useRemoveFriend } from '@/core/service/user/use-remove-friend';
@@ -13,20 +14,21 @@ import { useUpdateFriendRequest } from '@/core/service/user/use-update-friend-re
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
 import React from 'react';
 import { ChangeEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type Filter = 'all' | 'pending' | 'add-friend';
 
 export default function FriendsPage() {
   const user = useIsLoggedIn();
+  const navigate = useNavigate();
   const [friendToAdd, setFriendToAdd] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
 
   const { mutate: sendFriendRequest, isError, isSuccess } = useSendFriendRequest();
-  const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.username);
-  const { data: friends } = useGetFriends(user?.username);
+  const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.id);
+  const { data: friends } = useGetFriends(user?.id);
   const { mutate: updateFriendRequest } = useUpdateFriendRequest();
   const { mutate: removeFriendRequest } = useRemoveFriend();
-
-  const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFriendToAdd(e.target.value);
@@ -34,7 +36,7 @@ export default function FriendsPage() {
 
   const handleSendFriendRequest = () => {
     if (friendToAdd && user && user.username) {
-      sendFriendRequest({ userA: user.username, userB: friendToAdd });
+      sendFriendRequest({ usernameA: user.username, usernameB: friendToAdd });
       setFriendToAdd('');
     }
   };
@@ -43,9 +45,9 @@ export default function FriendsPage() {
     updateFriendRequest({ id, accept });
   };
 
-  const handleRemoveFriend = (usernameB: string) => {
-    if (user && user.username && usernameB) {
-      removeFriendRequest({ usernameA: user.username, usernameB: usernameB });
+  const handleRemoveFriend = (userIdToRemove: string) => {
+    if (user && user.id && userIdToRemove) {
+      removeFriendRequest({ currentUserId: user.id, toRemoveUserId: userIdToRemove });
     }
   };
 
@@ -120,16 +122,20 @@ export default function FriendsPage() {
                           <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
                         </Avatar>
                         <div className='flex flex-col'>
-                          <div>{item?.userA === user?.username ? item?.userB : item?.userA}</div>
+                          <div>
+                            {item?.userA.username === user?.username
+                              ? item?.userB?.username
+                              : item?.userA?.username}
+                          </div>
                           <div className='text-xs text-muted-foreground'>
-                            {item?.userA === user?.username
+                            {item?.userA?.username === user?.username
                               ? 'Outgoing friend request'
                               : 'Incoming friend request'}
                           </div>
                         </div>
                       </div>
                       <div className='flex flex-row gap-2'>
-                        {item?.userA !== user?.username && (
+                        {item?.userA?.username !== user?.username && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Avatar
@@ -147,7 +153,13 @@ export default function FriendsPage() {
                           <TooltipTrigger asChild>
                             <Avatar
                               className='bg-primary-foreground items-center justify-center cursor-pointer'
-                              onClick={() => handleRemoveFriend(item?.userB)}
+                              onClick={() =>
+                                handleRemoveFriend(
+                                  item?.userA?.username === user?.username
+                                    ? item?.userB?.id
+                                    : item?.userA?.id
+                                )
+                              }
                             >
                               <Icons.cancel className='hover:text-red-600' aria-label='Cancel' />
                             </Avatar>
@@ -174,18 +186,18 @@ export default function FriendsPage() {
               </div>
 
               <div className='my-4 flex flex-col gap-3'>
-                {friends?.data?.map((friend: string) => {
+                {friends?.data?.map((friend: User) => {
                   return (
                     <div
                       className='flex flex-row justify-between items-center hover:bg-secondary rounded-sm p-2'
-                      key={friend}
+                      key={friend.id}
                     >
                       <div className='flex flex-row gap-2 items-center'>
                         <Avatar>
                           <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
                         </Avatar>
                         <div className='flex flex-col'>
-                          <div>{friend}</div>
+                          <div>{friend.username}</div>
                         </div>
                       </div>
                       <div className='flex flex-row gap-2'>
@@ -194,7 +206,7 @@ export default function FriendsPage() {
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'
-                                onClick={() => handleRemoveFriend(friend)}
+                                onClick={() => navigate(`/chat/${friend}`)}
                               >
                                 <Icons.message
                                   className='hover:text-muted-foreground'
@@ -210,7 +222,7 @@ export default function FriendsPage() {
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'
-                                onClick={() => handleRemoveFriend(friend)}
+                                onClick={() => handleRemoveFriend(friend.id)}
                               >
                                 <Icons.cancel className='hover:text-red-600' aria-label='Remove' />
                               </Avatar>

@@ -1,6 +1,8 @@
+import { User } from './user.interface';
+
 export interface FriendRequest {
   id: number;
-  userA: string;
-  userB: string;
+  userA: User;
+  userB: User;
   status: number;
 }

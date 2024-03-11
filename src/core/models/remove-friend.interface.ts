@@ -1,4 +1,4 @@
 export interface RemoveFriendRequest {
-  usernameA: string;
-  usernameB: string;
+  currentUserId: string;
+  toRemoveUserId: string;
 }

@@ -1,6 +1,7 @@
 import { CreateUserRequest } from '@/core/models/create-user.interface';
 import { RemoveFriendRequest } from '@/core/models/remove-friend.interface';
 import { FriendRequest } from '@/core/models/get-friend-request.interface';
+import { User } from '@/core/models/user.interface';
 import { SendFriendRequest } from '@/core/models/send-friend-request.interface';
 import { updateFriendRequest } from '@/core/models/update-friend-request.interface';
 
@@ -19,14 +20,14 @@ export class UserService {
     }
   };
 
-  sendFriendRequest = async ({ userA, userB }: SendFriendRequest) => {
+  sendFriendRequest = async ({ usernameA, usernameB }: SendFriendRequest) => {
     try {
       return await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userA: userA, userB: userB })
+        body: JSON.stringify({ usernameA, usernameB })
       });
     } catch (e) {
       return console.error(e);
@@ -34,11 +35,11 @@ export class UserService {
   };
 
   getPendingFriendRequests = async (
-    userA?: string | null
+    userId?: string | null
   ): Promise<{ data: FriendRequest[] } | void> => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/requests/${userA}`,
+        `${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/requests/${userId}`,
         {
           method: 'GET'
         }
@@ -63,9 +64,9 @@ export class UserService {
     }
   };
 
-  getFriends = async (userA?: string | null): Promise<{ data: string[] } | void> => {
+  getFriends = async (userId?: string | null): Promise<{ data: User[] } | void> => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/${userA}`, {
+      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends/${userId}`, {
         method: 'GET'
       });
       return res.json();
@@ -79,8 +80,8 @@ export class UserService {
       return await fetch(`${import.meta.env.VITE_SERVICE_URL}/api/v1/friends`, {
         method: 'DELETE',
         body: JSON.stringify({
-          usernameA: data.usernameA,
-          usernameB: data.usernameB
+          currentUserId: data.currentUserId,
+          toRemoveUserId: data.toRemoveUserId
         })
       });
     } catch (e) {
