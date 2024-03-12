@@ -25,8 +25,8 @@ export default function DashboardLayout() {
   const { mutate: createUser, isPending, isError } = useCreateUser();
   const [socketUrl, setSocketUrl] = useState<string>('');
 
-  const { readyState, sendJsonMessage } = useWebSocket(socketUrl, {
-    onOpen: () => console.log('opened'),
+  const { readyState, lastJsonMessage } = useWebSocket(socketUrl, {
+    share: false,
     shouldReconnect: () => true
   });
 
@@ -37,9 +37,16 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
-      sendJsonMessage({ sender: 'user1', recipient: 'user2', content: 'testing' });
+      console.log('opened');
+      // sendJsonMessage({ sender: 'user1', recipient: 'user2', content: 'testing' });
     }
   }, [readyState]);
+
+  useEffect(() => {
+    if (lastJsonMessage) {
+      console.log('received message: ', JSON.stringify(lastJsonMessage));
+    }
+  }, [lastJsonMessage]);
 
   useEffect(() => {
     if (user && user.username) {
