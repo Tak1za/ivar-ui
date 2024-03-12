@@ -53,7 +53,7 @@ export default function DashboardLayout() {
       createUser({ id: user.id, username: user.username });
       handleChangeSocketUrl(user.id);
     }
-  }, [user, user?.username, createUser]);
+  }, [user, user?.username, createUser, handleChangeSocketUrl]);
 
   useEffect(() => {
     if (isError && !isPending) {
@@ -125,7 +125,7 @@ export default function DashboardLayout() {
           </div>
         </div>
       </div>
-      <div className='flex flex-col w-full'>
+      <div className='flex flex-col w-full h-full'>
         <Outlet />
       </div>
     </>
