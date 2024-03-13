@@ -1,4 +1,7 @@
+import Loader from '@/components/local/Loader/Loader';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Message } from '@/core/models/message.interface';
+import { useChatInfo } from '@/core/service/chat/use-get-chat-info';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -10,8 +13,9 @@ export default function Chat() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [currentValue, setCurrentValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-
   const [socketUrl, setSocketUrl] = useState<string>('');
+
+  const { mutate: getChatInfo, data: chatInfo, status } = useChatInfo();
 
   const { readyState, lastJsonMessage, sendJsonMessage } = useWebSocket(socketUrl, {
     share: true
@@ -31,7 +35,7 @@ export default function Chat() {
   useEffect(() => {
     if (lastJsonMessage) {
       const parsedJson = JSON.parse(JSON.stringify(lastJsonMessage));
-      setMessages((prev) => [...prev, parsedJson]);
+      setMessages((prev) => [parsedJson, ...prev]);
     }
   }, [lastJsonMessage]);
 
@@ -40,6 +44,12 @@ export default function Chat() {
       handleChangeSocketUrl(user.id);
     }
   }, [user, user?.id, handleChangeSocketUrl]);
+
+  useEffect(() => {
+    if (user && user.id && params && params.userId) {
+      getChatInfo({ users: [user.id, params.userId] });
+    }
+  }, [user, user?.id, params, params?.userId]);
 
   useEffect(() => {
     textareaRef.current!.style!.height = '0px';
@@ -58,43 +68,59 @@ export default function Chat() {
           content: currentValue
         };
         sendJsonMessage(jsonMsg);
-        setMessages((prev) => [...prev, jsonMsg]);
+        setMessages((prev) => [jsonMsg, ...prev]);
         setCurrentValue('');
       }
     }
   };
 
+  useEffect(() => {
+    console.log('chatInfo: ', chatInfo);
+  }, [chatInfo]);
+
+  const getSenderUsername = (sender: string) => {
+    if (chatInfo) {
+      return chatInfo.data.users.find((user) => user.id === sender)?.username;
+    }
+  };
+
   return (
     <React.Fragment>
-      <div className='flex flex-grow overflow-y-auto px-7 pt-7 pb-0 flex-col-reverse gap-2'>
-        {messages.map((message) =>
-          message.sender === user?.id ? (
-            <div className='w-full flex flex-row-reverse'>
-              <div className='break-words p-2 rounded-md bg-secondary'>{message.content}</div>
-            </div>
-          ) : (
-            <div className='w-full flex flex-row'>
-              <div className='break-words flex p-2 rounded-md bg-secondary'>{message.content}</div>
-            </div>
-          )
-        )}
-      </div>
-      <div className='flex justify-stretch flex-col p-7'>
-        <textarea
-          ref={textareaRef}
-          className='rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden max-h-[500px] overflow-y-auto'
-          placeholder='Message'
-          onChange={(e) => setCurrentValue(e.target.value)}
-          value={currentValue}
-          onKeyDown={(e) => {
-            const keyCode = e.key;
-            if (keyCode === 'Enter') {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-        />
-      </div>
+      {status === 'pending' ? (
+        <Loader />
+      ) : (
+        <React.Fragment>
+          <div className='flex flex-grow overflow-y-auto px-7 pt-7 pb-0 flex-col-reverse gap-2'>
+            {messages.map((message) => (
+              <div className='p-2 flex flex-row items-start gap-2'>
+                <Avatar>
+                  <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                </Avatar>
+                <div className='flex flex-col items-start'>
+                  <div className='text-red-500 text-sm'>{getSenderUsername(message.sender)}</div>
+                  <div>{message.content}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className='flex justify-stretch flex-col p-7'>
+            <textarea
+              ref={textareaRef}
+              className='rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden max-h-[500px] overflow-y-auto'
+              placeholder='Message'
+              onChange={(e) => setCurrentValue(e.target.value)}
+              value={currentValue}
+              onKeyDown={(e) => {
+                const keyCode = e.key;
+                if (keyCode === 'Enter') {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+          </div>
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 }

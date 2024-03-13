@@ -16,6 +16,7 @@ import {
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import Loader from '@/components/local/Loader/Loader';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -57,17 +58,10 @@ export default function DashboardLayout() {
 
   if (!isLoaded || isPending) {
     return (
-      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-        <div className='flex flex-col gap-2'>
-          <div className='flex flex-row gap-2 place-items-center'>
-            <Icons.spinner className='animate-spin h-10'></Icons.spinner>
-            <p>Hold on while we log you in...</p>
-          </div>
-          <p className='text-sm text-muted-foreground -ml-4 font-bold'>
-            FACT: Good things happen to those who wait
-          </p>
-        </div>
-      </div>
+      <Loader
+        text='Hold on while we log you in...'
+        subtext='FACT: Good things happen to those who wait'
+      />
     );
   }
 
