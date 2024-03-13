@@ -24,7 +24,7 @@ const router = createBrowserRouter([
             element: <FriendsPage />
           },
           {
-            path: 'chat/:username',
+            path: 'chat/:userId',
             element: <Chat />
           }
         ]

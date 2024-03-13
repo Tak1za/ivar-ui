@@ -25,8 +25,8 @@ export default function DashboardLayout() {
   const { mutate: createUser, isPending, isError } = useCreateUser();
   const [socketUrl, setSocketUrl] = useState<string>('');
 
-  const { readyState, lastJsonMessage } = useWebSocket(socketUrl, {
-    share: false,
+  const { readyState } = useWebSocket(socketUrl, {
+    share: true,
     shouldReconnect: () => true
   });
 
@@ -41,12 +41,6 @@ export default function DashboardLayout() {
       // sendJsonMessage({ sender: 'user1', recipient: 'user2', content: 'testing' });
     }
   }, [readyState]);
-
-  useEffect(() => {
-    if (lastJsonMessage) {
-      console.log('received message: ', JSON.stringify(lastJsonMessage));
-    }
-  }, [lastJsonMessage]);
 
   useEffect(() => {
     if (user && user.username) {

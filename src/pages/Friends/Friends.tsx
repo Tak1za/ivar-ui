@@ -206,7 +206,7 @@ export default function FriendsPage() {
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'
-                                onClick={() => navigate(`/chat/${friend.username}`)}
+                                onClick={() => navigate(`/chat/${friend.id}`)}
                               >
                                 <Icons.message
                                   className='hover:text-muted-foreground'
