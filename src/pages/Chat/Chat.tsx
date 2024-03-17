@@ -6,6 +6,7 @@ import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import moment from 'moment';
 
 export default function Chat() {
   const user = useIsLoggedIn();
@@ -76,7 +77,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (chatInfo) {
-      setMessages((prev) => [...prev, ...chatInfo.data.messages]);
+      setMessages(chatInfo.data.messages);
     }
   }, [chatInfo]);
 
@@ -84,6 +85,14 @@ export default function Chat() {
     if (chatInfo) {
       return chatInfo.data.users.find((user) => user.id === sender)?.username;
     }
+  };
+
+  const getMessageTimestamp = (timestamp?: string) => {
+    if (!timestamp) {
+      return '';
+    }
+
+    return moment(timestamp).format('DD/MM/YYYY h:mm A');
   };
 
   return (
@@ -99,7 +108,12 @@ export default function Chat() {
                   <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
                 </Avatar>
                 <div className='flex flex-col items-start'>
-                  <div className='text-red-500 text-sm'>{getSenderUsername(message.sender)}</div>
+                  <div className='flex flex-row gap-2 items-center'>
+                    <div className='text-red-500 text-sm'>{getSenderUsername(message.sender)}</div>
+                    <div className='text-muted-foreground text-xs'>
+                      {getMessageTimestamp(message.timestamp)}
+                    </div>
+                  </div>
                   <div>{message.content}</div>
                 </div>
               </div>
