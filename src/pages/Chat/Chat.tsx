@@ -75,7 +75,9 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    console.log('chatInfo: ', chatInfo);
+    if (chatInfo) {
+      setMessages((prev) => [...prev, ...chatInfo.data.messages]);
+    }
   }, [chatInfo]);
 
   const getSenderUsername = (sender: string) => {
