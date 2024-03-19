@@ -122,7 +122,7 @@ export default function Chat() {
           <div className='flex justify-stretch flex-col p-7'>
             <textarea
               ref={textareaRef}
-              className='rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden max-h-[500px] overflow-y-auto'
+              className='rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden h-12 max-h-[500px] overflow-y-auto'
               placeholder='Message'
               onChange={(e) => setCurrentValue(e.target.value)}
               value={currentValue}

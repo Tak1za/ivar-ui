@@ -15,8 +15,10 @@ import {
   AlertDialogCancel,
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import Loader from '@/components/local/Loader/Loader';
+import { useGetChats } from '@/core/service/chat/use-get-chats';
+import { User } from '@/core/models/user.interface';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -24,9 +26,11 @@ export default function DashboardLayout() {
   const { isLoaded, signOut } = useAuth();
   const { user } = useUser();
   const { mutate: createUser, isPending, isError } = useCreateUser();
+  const { data: chats, isLoading: isLoadingChats } = useGetChats(user?.id);
   const [socketUrl, setSocketUrl] = useState<string>('');
+  const [chatList, setChatList] = useState<User[]>([]);
 
-  const { readyState } = useWebSocket(socketUrl, {
+  useWebSocket(socketUrl, {
     share: true,
     shouldReconnect: () => true
   });
@@ -35,13 +39,6 @@ export default function DashboardLayout() {
     (userId: string) => setSocketUrl(`${import.meta.env.VITE_SERVICE_WS_URL}/ws/${userId}`),
     []
   );
-
-  useEffect(() => {
-    if (readyState === ReadyState.OPEN) {
-      console.log('opened');
-      // sendJsonMessage({ sender: 'user1', recipient: 'user2', content: 'testing' });
-    }
-  }, [readyState]);
 
   useEffect(() => {
     if (user && user.username) {
@@ -56,6 +53,12 @@ export default function DashboardLayout() {
     }
   }, [isError, isPending, signOut]);
 
+  useEffect(() => {
+    if (chats && chats.data) {
+      setChatList(chats.data);
+    }
+  }, [chats]);
+
   if (!isLoaded || isPending) {
     return (
       <Loader
@@ -67,10 +70,10 @@ export default function DashboardLayout() {
 
   return (
     <>
-      <div className='h-full w-16 bg-secondary'></div>
-      <div className='h-full w-56 bg-primary-foreground'>
+      <div className='h-full min-w-16 max-w-16 bg-secondary'></div>
+      <div className='h-full min-w-72 max-w-72 bg-primary-foreground'>
         <div className='flex flex-col justify-between h-full'>
-          <div className='flex-grow p-2 flex flex-col'>
+          <div className='flex-grow p-2 flex flex-col overflow-y-auto'>
             <div
               className={`flex flex-row gap-2 items-center py-2 px-4 rounded-md hover:bg-secondary hover:cursor-pointer ${location.pathname === '/friends' ? 'bg-secondary' : ''}`}
               onClick={() => navigate('/friends')}
@@ -78,7 +81,22 @@ export default function DashboardLayout() {
               <Icons.friends />
               <p>Friends</p>
             </div>
-            <div className='text-xs text-muted-foreground mt-2 uppercase'>Direct Messages</div>
+            <div className='text-xs text-muted-foreground mt-2 uppercase p-2'>Direct Messages</div>
+            <div className='flex flex-col gap-2 py-3 px-2'>
+              {!isLoadingChats && chatList
+                ? chatList.map((chat) => (
+                    <div
+                      className={`flex flex-row gap-4 p-2 items-center rounded-md hover:bg-secondary hover:cursor-pointer ${location.pathname === `/chat/${chat.id}` ? 'bg-secondary' : ''}`}
+                      onClick={() => navigate(`/chat/${chat.id}`)}
+                    >
+                      <Avatar>
+                        <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                      </Avatar>
+                      <div>{chat.username}</div>
+                    </div>
+                  ))
+                : null}
+            </div>
           </div>
           <div className='bg-secondary h-16 flex flex-shrink items-center px-3 justify-between'>
             <div className='flex flex-row items-center gap-2'>
@@ -113,7 +131,7 @@ export default function DashboardLayout() {
           </div>
         </div>
       </div>
-      <div className='flex flex-col w-full h-full'>
+      <div className='flex flex-col h-full w-full min-w-[70%]'>
         <Outlet />
       </div>
     </>
