@@ -108,7 +108,19 @@ export default function Chat() {
         <Loader />
       ) : (
         <React.Fragment>
-          <div className='flex flex-grow overflow-y-auto px-7 pt-7 pb-0 flex-col-reverse gap-2'>
+          <div className='flex flex-row px-10 py-4 text-red-500 items-center shadow-topbar'>
+            <div className='flex flex-row items-center gap-2'>
+              <Avatar className='h-6 w-6'>
+                <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+              </Avatar>
+              <div className='flex flex-col'>
+                <div>
+                  {chatInfo?.data.users.find((user) => user.id === params?.userId)?.username}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-grow overflow-y-auto px-7 py-2 flex-col-reverse gap-2'>
             {messages.map((message) => (
               <div className='p-2 flex flex-row items-start gap-2'>
                 <Avatar>
