@@ -3,28 +3,32 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Message } from '@/core/models/message.interface';
 import { useChatInfo } from '@/core/service/chat/use-get-chat-info';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import moment from 'moment';
+import { useAppState } from '@/store/provider';
 
 export default function Chat() {
-  const user = useIsLoggedIn();
+  useIsLoggedIn();
   const params = useParams();
+  const {
+    state: { currentUser },
+    dispatch
+  } = useAppState();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [currentValue, setCurrentValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [socketUrl, setSocketUrl] = useState<string>('');
 
   const { mutate: getChatInfo, data: chatInfo, status } = useChatInfo();
 
-  const { readyState, lastJsonMessage, sendJsonMessage } = useWebSocket(socketUrl, {
-    share: true
-  });
-
-  const handleChangeSocketUrl = useCallback(
-    (userId: string) => setSocketUrl(`${import.meta.env.VITE_SERVICE_WS_URL}/ws/${userId}`),
-    []
+  const { readyState, lastJsonMessage, sendJsonMessage } = useWebSocket(
+    `${import.meta.env.VITE_SERVICE_WS_URL}/ws/${currentUser.id}`,
+    {
+      share: true,
+      shouldReconnect: () => true,
+      retryOnError: true
+    }
   );
 
   useEffect(() => {
@@ -35,22 +39,18 @@ export default function Chat() {
 
   useEffect(() => {
     if (lastJsonMessage) {
-      const parsedJson = JSON.parse(JSON.stringify(lastJsonMessage));
-      setMessages((prev) => [parsedJson, ...prev]);
+      const parsedJson: Message = JSON.parse(JSON.stringify(lastJsonMessage));
+      if (parsedJson.sender === params?.userId) {
+        setMessages((prev) => [parsedJson, ...prev]);
+      }
     }
   }, [lastJsonMessage]);
 
   useEffect(() => {
-    if (user && user.id) {
-      handleChangeSocketUrl(user.id);
+    if (currentUser && currentUser.id && params && params.userId) {
+      getChatInfo({ users: [currentUser.id, params.userId] });
     }
-  }, [user, user?.id, handleChangeSocketUrl]);
-
-  useEffect(() => {
-    if (user && user.id && params && params.userId) {
-      getChatInfo({ users: [user.id, params.userId] });
-    }
-  }, [user, user?.id, params, params?.userId]);
+  }, [currentUser, currentUser?.id, params, params?.userId]);
 
   useEffect(() => {
     textareaRef.current!.style!.height = '0px';
@@ -59,9 +59,10 @@ export default function Chat() {
   }, [currentValue]);
 
   const handleSendMessage = () => {
-    if (currentValue) {
-      const sender = user?.id;
+    if (currentValue && chatInfo) {
+      const sender = currentUser?.id;
       const recipient = params?.userId;
+      const recipientUsername = chatInfo.data.users.find((user) => user.id === recipient)?.username;
       if (sender && recipient) {
         const jsonMsg: Message = {
           sender: sender,
@@ -69,6 +70,12 @@ export default function Chat() {
           content: currentValue
         };
         sendJsonMessage(jsonMsg);
+        if (messages.length === 0) {
+          dispatch({
+            type: 'ADD_CHAT',
+            payload: { id: recipient, username: recipientUsername ?? recipient }
+          });
+        }
         setMessages((prev) => [jsonMsg, ...prev]);
         setCurrentValue('');
       }

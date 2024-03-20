@@ -12,6 +12,7 @@ import { useRemoveFriend } from '@/core/service/user/use-remove-friend';
 import { useSendFriendRequest } from '@/core/service/user/use-send-friend-request';
 import { useUpdateFriendRequest } from '@/core/service/user/use-update-friend-request';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
+import { useAppState } from '@/store/provider';
 import React from 'react';
 import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,14 +20,17 @@ import { useNavigate } from 'react-router-dom';
 type Filter = 'all' | 'pending' | 'add-friend';
 
 export default function FriendsPage() {
-  const user = useIsLoggedIn();
+  useIsLoggedIn();
+  const {
+    state: { currentUser }
+  } = useAppState();
   const navigate = useNavigate();
   const [friendToAdd, setFriendToAdd] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<Filter>('all');
 
   const { mutate: sendFriendRequest, isError, isSuccess } = useSendFriendRequest();
-  const { data: pendingFriendRequests } = useGetPendingFriendRequests(user?.id);
-  const { data: friends } = useGetFriends(user?.id);
+  const { data: pendingFriendRequests } = useGetPendingFriendRequests(currentUser?.id);
+  const { data: friends } = useGetFriends(currentUser?.id);
   const { mutate: updateFriendRequest } = useUpdateFriendRequest();
   const { mutate: removeFriendRequest } = useRemoveFriend();
 
@@ -35,8 +39,8 @@ export default function FriendsPage() {
   };
 
   const handleSendFriendRequest = () => {
-    if (friendToAdd && user && user.username) {
-      sendFriendRequest({ usernameA: user.username, usernameB: friendToAdd });
+    if (friendToAdd && currentUser && currentUser.username) {
+      sendFriendRequest({ usernameA: currentUser.username, usernameB: friendToAdd });
       setFriendToAdd('');
     }
   };
@@ -46,8 +50,8 @@ export default function FriendsPage() {
   };
 
   const handleRemoveFriend = (userIdToRemove: string) => {
-    if (user && user.id && userIdToRemove) {
-      removeFriendRequest({ currentUserId: user.id, toRemoveUserId: userIdToRemove });
+    if (currentUser && currentUser.id && userIdToRemove) {
+      removeFriendRequest({ currentUserId: currentUser.id, toRemoveUserId: userIdToRemove });
     }
   };
 
@@ -123,19 +127,19 @@ export default function FriendsPage() {
                         </Avatar>
                         <div className='flex flex-col'>
                           <div>
-                            {item?.userA.username === user?.username
+                            {item?.userA.username === currentUser?.username
                               ? item?.userB?.username
                               : item?.userA?.username}
                           </div>
                           <div className='text-xs text-muted-foreground'>
-                            {item?.userA?.username === user?.username
+                            {item?.userA?.username === currentUser?.username
                               ? 'Outgoing friend request'
                               : 'Incoming friend request'}
                           </div>
                         </div>
                       </div>
                       <div className='flex flex-row gap-2'>
-                        {item?.userA?.username !== user?.username && (
+                        {item?.userA?.username !== currentUser?.username && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Avatar
@@ -155,7 +159,7 @@ export default function FriendsPage() {
                               className='bg-primary-foreground items-center justify-center cursor-pointer'
                               onClick={() =>
                                 handleRemoveFriend(
-                                  item?.userA?.username === user?.username
+                                  item?.userA?.username === currentUser?.username
                                     ? item?.userB?.id
                                     : item?.userA?.id
                                 )

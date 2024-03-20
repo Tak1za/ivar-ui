@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import FriendsPage from './pages/Friends/Friends.tsx';
 import Chat from './pages/Chat/Chat.tsx';
+import { AppStateProvider } from './store/provider.tsx';
 
 const router = createBrowserRouter([
   {
@@ -47,7 +48,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <RouterProvider router={router} />
+        <AppStateProvider>
+          <RouterProvider router={router} />
+        </AppStateProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </React.StrictMode>

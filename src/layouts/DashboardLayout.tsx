@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCreateUser } from '@/core/service/user/use-create-user';
@@ -15,37 +15,35 @@ import {
   AlertDialogCancel,
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
-import useWebSocket from 'react-use-websocket';
 import Loader from '@/components/local/Loader/Loader';
 import { useGetChats } from '@/core/service/chat/use-get-chats';
-import { User } from '@/core/models/user.interface';
+import { useAppState } from '@/store/provider';
+import useWebSocket from 'react-use-websocket';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const {
+    state: { chatList, currentUser },
+    dispatch
+  } = useAppState();
   const { isLoaded, signOut } = useAuth();
   const { user } = useUser();
   const { mutate: createUser, isPending, isError } = useCreateUser();
   const { data: chats, isLoading: isLoadingChats } = useGetChats(user?.id);
-  const [socketUrl, setSocketUrl] = useState<string>('');
-  const [chatList, setChatList] = useState<User[]>([]);
-
-  useWebSocket(socketUrl, {
-    share: true,
-    shouldReconnect: () => true
-  });
-
-  const handleChangeSocketUrl = useCallback(
-    (userId: string) => setSocketUrl(`${import.meta.env.VITE_SERVICE_WS_URL}/ws/${userId}`),
-    []
-  );
 
   useEffect(() => {
-    if (user && user.username) {
+    if (user && user.username && user.id) {
       createUser({ id: user.id, username: user.username });
-      handleChangeSocketUrl(user.id);
+      dispatch({ type: 'SET_CURRENT_USER', payload: { id: user.id, username: user.username } });
     }
-  }, [user, user?.username, createUser, handleChangeSocketUrl]);
+  }, [user, user?.username, createUser]);
+
+  useWebSocket(`${import.meta.env.VITE_SERVICE_WS_URL}/ws/${currentUser.id}`, {
+    share: true,
+    shouldReconnect: () => true,
+    retryOnError: true
+  });
 
   useEffect(() => {
     if (isError && !isPending) {
@@ -55,7 +53,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     if (chats && chats.data) {
-      setChatList(chats.data);
+      dispatch({ type: 'SET_CHAT_LIST', payload: chats.data });
     }
   }, [chats]);
 
@@ -123,7 +121,15 @@ export default function DashboardLayout() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => signOut()}>Logout</AlertDialogAction>
+                    <AlertDialogAction
+                      onClick={() => {
+                        signOut().then(() => {
+                          dispatch({ type: 'CLEAR_STATE' });
+                        });
+                      }}
+                    >
+                      Logout
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
