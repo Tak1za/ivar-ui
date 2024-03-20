@@ -108,7 +108,7 @@ export default function Chat() {
         <Loader />
       ) : (
         <React.Fragment>
-          <div className='flex flex-row px-10 py-4 text-red-500 items-center shadow-topbar'>
+          <div className='flex flex-row px-10 py-4 font-semibold items-center shadow-topbar'>
             <div className='flex flex-row items-center gap-2'>
               <Avatar className='h-6 w-6'>
                 <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
@@ -128,7 +128,7 @@ export default function Chat() {
                 </Avatar>
                 <div className='flex flex-col items-start'>
                   <div className='flex flex-row gap-2 items-center'>
-                    <div className='text-red-500 text-sm'>{getSenderUsername(message.sender)}</div>
+                    <div className='font-semibold'>{getSenderUsername(message.sender)}</div>
                     <div className='text-muted-foreground text-xs'>
                       {getMessageTimestamp(message.timestamp)}
                     </div>
