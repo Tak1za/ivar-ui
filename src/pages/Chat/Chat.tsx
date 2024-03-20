@@ -94,6 +94,10 @@ export default function Chat() {
     }
   };
 
+  const getCurrentChatUsername = () => {
+    return chatInfo?.data.users.find((user) => user.id === params?.userId)?.username;
+  };
+
   const getMessageTimestamp = (timestamp?: string) => {
     if (!timestamp) {
       return '';
@@ -114,9 +118,7 @@ export default function Chat() {
                 <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
               </Avatar>
               <div className='flex flex-col'>
-                <div>
-                  {chatInfo?.data.users.find((user) => user.id === params?.userId)?.username}
-                </div>
+                <div>{getCurrentChatUsername()}</div>
               </div>
             </div>
           </div>
