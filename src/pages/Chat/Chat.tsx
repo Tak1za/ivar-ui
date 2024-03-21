@@ -67,7 +67,8 @@ export default function Chat() {
         const jsonMsg: Message = {
           sender: sender,
           recipient: recipient,
-          content: currentValue
+          content: currentValue,
+          timestamp: new Date().toISOString()
         };
         sendJsonMessage(jsonMsg);
         if (messages.length === 0) {
@@ -88,12 +89,6 @@ export default function Chat() {
     }
   }, [chatInfo]);
 
-  const getSenderUsername = (sender: string) => {
-    if (chatInfo) {
-      return chatInfo.data.users.find((user) => user.id === sender)?.username;
-    }
-  };
-
   const getCurrentChatUsername = () => {
     return chatInfo?.data.users.find((user) => user.id === params?.userId)?.username;
   };
@@ -103,7 +98,7 @@ export default function Chat() {
       return '';
     }
 
-    return moment(timestamp).format('DD/MM/YYYY h:mm A');
+    return moment(timestamp).format('h:mm A');
   };
 
   return (
@@ -112,7 +107,7 @@ export default function Chat() {
         <Loader />
       ) : (
         <React.Fragment>
-          <div className='flex flex-row px-10 py-4 font-semibold items-center shadow-topbar'>
+          <div className='flex flex-row px-7 py-4 font-semibold items-center shadow-topbar z-50'>
             <div className='flex flex-row items-center gap-2'>
               <Avatar className='h-6 w-6'>
                 <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
@@ -124,18 +119,14 @@ export default function Chat() {
           </div>
           <div className='flex flex-grow overflow-y-auto px-7 py-2 flex-col-reverse gap-2'>
             {messages.map((message) => (
-              <div className='p-2 flex flex-row items-start gap-2'>
-                <Avatar>
-                  <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
-                </Avatar>
-                <div className='flex flex-col items-start'>
-                  <div className='flex flex-row gap-2 items-center'>
-                    <div className='font-semibold'>{getSenderUsername(message.sender)}</div>
-                    <div className='text-muted-foreground text-xs'>
-                      {getMessageTimestamp(message.timestamp)}
-                    </div>
+              <div
+                className={`flex flex-col ${message.sender === currentUser.id ? 'items-end' : 'items-start'}`}
+              >
+                <div className='flex flex-row gap-2 items-end rounded-lg bg-primary-foreground p-2'>
+                  <div className='flex justify-end'>{message.content}</div>
+                  <div className='flex text-muted-foreground text-xs justify-end text-nowrap'>
+                    {getMessageTimestamp(message.timestamp)}
                   </div>
-                  <div>{message.content}</div>
                 </div>
               </div>
             ))}
