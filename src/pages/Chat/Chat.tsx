@@ -101,6 +101,17 @@ export default function Chat() {
     return moment(timestamp).format('h:mm A');
   };
 
+  const getBorder = (currentMessage: Message, prevMessage: Message) => {
+    if (prevMessage.sender === currentMessage.sender) {
+      if (currentMessage.sender === currentUser.id) {
+        return 'rounded-tr-none';
+      }
+
+      return 'rounded-tl-none';
+    }
+    return '';
+  };
+
   return (
     <React.Fragment>
       {status === 'pending' ? (
@@ -118,14 +129,28 @@ export default function Chat() {
             </div>
           </div>
           <div className='flex flex-grow overflow-y-auto px-7 py-2 flex-col-reverse gap-2'>
-            {messages.map((message) => (
+            {messages.map((message, i) => (
               <div
                 className={`flex flex-col ${message.sender === currentUser.id ? 'items-end' : 'items-start'}`}
               >
-                <div className='flex flex-row gap-2 items-end rounded-lg bg-primary-foreground p-2'>
-                  <div className='flex justify-end'>{message.content}</div>
-                  <div className='flex text-muted-foreground text-xs justify-end text-nowrap'>
-                    {getMessageTimestamp(message.timestamp)}
+                <div
+                  className={`flex ${message.sender === currentUser.id ? 'flex-row-reverse' : 'flex-row'} gap-2`}
+                >
+                  {i === messages.length - 1 ||
+                  (i < messages.length - 1 && getBorder(message, messages[i + 1]) === '') ? (
+                    <Avatar className='h-8 w-8'>
+                      <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                    </Avatar>
+                  ) : (
+                    <div className='min-h-8 min-w-8'></div>
+                  )}
+                  <div
+                    className={`flex flex-row gap-2 items-end rounded-lg bg-primary-foreground p-2 ${i < messages.length - 1 && getBorder(message, messages[i + 1])}`}
+                  >
+                    <div className='flex justify-end'>{message.content}</div>
+                    <div className='flex text-muted-foreground text-xs justify-end text-nowrap'>
+                      {getMessageTimestamp(message.timestamp)}
+                    </div>
                   </div>
                 </div>
               </div>
