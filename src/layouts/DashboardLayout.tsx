@@ -84,6 +84,7 @@ export default function DashboardLayout() {
               {!isLoadingChats && chatList
                 ? chatList.map((chat) => (
                     <div
+                      key={chat.id}
                       className={`flex flex-row gap-4 p-2 items-center rounded-md hover:bg-secondary hover:cursor-pointer ${location.pathname === `/chat/${chat.id}` ? 'bg-secondary' : ''}`}
                       onClick={() => navigate(`/chat/${chat.id}`)}
                     >
