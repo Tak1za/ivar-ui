@@ -128,7 +128,7 @@ export default function Chat() {
               </div>
             </div>
           </div>
-          <div className='flex flex-grow overflow-y-auto px-7 py-2 flex-col-reverse gap-2'>
+          <div className='flex flex-grow overflow-y-auto px-7 py-4 flex-col-reverse gap-2'>
             {messages.map((message, i) => (
               <div
                 key={message.id}

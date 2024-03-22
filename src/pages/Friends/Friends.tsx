@@ -140,7 +140,7 @@ export default function FriendsPage() {
                       </div>
                       <div className='flex flex-row gap-2'>
                         {item?.userA?.username !== currentUser?.username && (
-                          <Tooltip>
+                          <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'
@@ -153,7 +153,7 @@ export default function FriendsPage() {
                           </Tooltip>
                         )}
 
-                        <Tooltip>
+                        <Tooltip delayDuration={0}>
                           <TooltipTrigger asChild>
                             <Avatar
                               className='bg-primary-foreground items-center justify-center cursor-pointer'
@@ -206,7 +206,7 @@ export default function FriendsPage() {
                       </div>
                       <div className='flex flex-row gap-2'>
                         {friend && (
-                          <Tooltip>
+                          <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'
@@ -222,7 +222,7 @@ export default function FriendsPage() {
                           </Tooltip>
                         )}
                         {friend && (
-                          <Tooltip>
+                          <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
                               <Avatar
                                 className='bg-primary-foreground items-center justify-center cursor-pointer'

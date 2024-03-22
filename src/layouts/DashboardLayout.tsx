@@ -19,6 +19,15 @@ import Loader from '@/components/local/Loader/Loader';
 import { useGetChats } from '@/core/service/chat/use-get-chats';
 import { useAppState } from '@/store/provider';
 import useWebSocket from 'react-use-websocket';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -107,7 +116,29 @@ export default function DashboardLayout() {
                 <div className='text-xs text-muted-foreground'>Online</div>
               </div>
             </div>
-            <div className='w-7 h-7'>
+            <div className='flex flex-row gap-2 items-center'>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Icons.settings className='hover:cursor-pointer' />
+                      </DialogTrigger>
+                      <DialogContent className='min-w-full h-screen px-72'>
+                        <DialogHeader>
+                          <DialogTitle>Edit profile</DialogTitle>
+                          <DialogDescription>
+                            Make changes to your profile here. Click save when you're done.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className='grid gap-4 py-4'>testing testing</div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Settings</TooltipContent>
+              </Tooltip>
+
               <AlertDialog>
                 <AlertDialogTrigger>
                   <Icons.logout />
