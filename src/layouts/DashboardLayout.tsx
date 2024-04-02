@@ -20,14 +20,7 @@ import { useGetChats } from '@/core/service/chat/use-get-chats';
 import { useAppState } from '@/store/provider';
 import useWebSocket from 'react-use-websocket';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+import CreateServerButton from '@/components/local/Server/CreateServerButton';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -79,9 +72,7 @@ export default function DashboardLayout() {
     <>
       <div className='h-full min-w-16 max-w-16 bg-secondary'>
         <div className='flex flex-col h-full py-2 px-1 overflow-y-auto'>
-          <div className='h-14 w-14 rounded-full bg-primary-foreground flex justify-center items-center cursor-pointer'>
-            <Icons.plus className='text-green-500 hover:text-green-600' />
-          </div>
+          <CreateServerButton />
         </div>
       </div>
       <div className='h-full min-w-72 max-w-72 bg-primary-foreground'>
@@ -126,20 +117,10 @@ export default function DashboardLayout() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Icons.settings className='hover:cursor-pointer' />
-                      </DialogTrigger>
-                      <DialogContent className='min-w-full h-screen px-72'>
-                        <DialogHeader>
-                          <DialogTitle>Edit profile</DialogTitle>
-                          <DialogDescription>
-                            Make changes to your profile here. Click save when you're done.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className='grid gap-4 py-4'>testing testing</div>
-                      </DialogContent>
-                    </Dialog>
+                    <Icons.settings
+                      className='hover:cursor-pointer'
+                      onClick={() => navigate('/settings/account')}
+                    />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>Settings</TooltipContent>

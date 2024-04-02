@@ -11,6 +11,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import FriendsPage from './pages/Friends/Friends.tsx';
 import Chat from './pages/Chat/Chat.tsx';
 import { AppStateProvider } from './store/provider.tsx';
+import Settings from './pages/Settings/Settings.tsx';
+import Account from './pages/Settings/pages/Account/Account.tsx';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,16 @@ const router = createBrowserRouter([
           {
             path: 'chat/:userId',
             element: <Chat />
+          }
+        ]
+      },
+      {
+        path: '/settings',
+        element: <Settings />,
+        children: [
+          {
+            path: 'account',
+            element: <Account />
           }
         ]
       },
