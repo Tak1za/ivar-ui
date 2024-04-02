@@ -77,7 +77,13 @@ export default function DashboardLayout() {
 
   return (
     <>
-      <div className='h-full min-w-16 max-w-16 bg-secondary'></div>
+      <div className='h-full min-w-16 max-w-16 bg-secondary'>
+        <div className='flex flex-col h-full py-2 px-1 overflow-y-auto'>
+          <div className='h-14 w-14 rounded-full bg-primary-foreground flex justify-center items-center cursor-pointer'>
+            <Icons.plus className='text-green-500 hover:text-green-600' />
+          </div>
+        </div>
+      </div>
       <div className='h-full min-w-72 max-w-72 bg-primary-foreground'>
         <div className='flex flex-col justify-between h-full'>
           <div className='flex-grow p-2 flex flex-col overflow-y-auto'>
