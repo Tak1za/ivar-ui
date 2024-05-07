@@ -21,6 +21,8 @@ import { useAppState } from '@/store/provider';
 import useWebSocket from 'react-use-websocket';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import CreateServerButton from '@/components/local/Server/CreateServerButton';
+import { useGetServers } from '@/core/service/server/use-get-servers';
+import { Server } from '@/core/models/get-servers.interface';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ export default function DashboardLayout() {
   const { user } = useUser();
   const { mutate: createUser, isPending, isError } = useCreateUser();
   const { data: chats, isLoading: isLoadingChats } = useGetChats(user?.id);
+  const { data: servers } = useGetServers();
 
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -71,7 +74,24 @@ export default function DashboardLayout() {
   return (
     <>
       <div className='h-full min-w-16 max-w-16 bg-secondary'>
-        <div className='flex flex-col h-full py-2 px-1 overflow-y-auto'>
+        <div className='flex flex-col h-full py-2 px-1 overflow-y-auto gap-2'>
+          {servers?.data.map((server: Server) => (
+            <Tooltip key={server.id}>
+              <TooltipTrigger>
+                <div
+                  key={server.id}
+                  className='flex flex-row gap-4 p-2 items-center rounded-md hover:bg-secondary hover:cursor-pointer h-14 w-14'
+                >
+                  <Avatar>
+                    <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
+                  </Avatar>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{server.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
           <CreateServerButton />
         </div>
       </div>
