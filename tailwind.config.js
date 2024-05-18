@@ -53,7 +53,8 @@ module.exports = {
         }
       },
       boxShadow: {
-        'topbar': '0px 0.5px 0px 0px rgba(255,255,255,1)'
+        topbar: '0px 0.5px 0px 0px rgba(255,255,255,1)',
+        avatar: '0px 0px 0px 8px rgba(15,23,42,1)'
       },
       borderRadius: {
         lg: 'var(--radius)',
