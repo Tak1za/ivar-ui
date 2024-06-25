@@ -135,7 +135,7 @@ export default function Chat() {
                 className={`flex flex-col ${message.sender === currentUser.id ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`flex ${message.sender === currentUser.id ? 'flex-row-reverse' : 'flex-row'} gap-2`}
+                  className={`flex ${message.sender === currentUser.id ? 'flex-row-reverse' : 'flex-row'} gap-2 w-full`}
                 >
                   {i === messages.length - 1 ||
                   (i < messages.length - 1 && getBorder(message, messages[i + 1]) === '') ? (
@@ -146,9 +146,9 @@ export default function Chat() {
                     <div className='min-h-8 min-w-8'></div>
                   )}
                   <div
-                    className={`flex flex-row gap-2 items-end rounded-lg bg-primary-foreground p-2 ${i < messages.length - 1 && getBorder(message, messages[i + 1])}`}
+                    className={`flex flex-row gap-2 items-end rounded-lg bg-primary-foreground p-2 max-w-[70%] ${i < messages.length - 1 && getBorder(message, messages[i + 1])}`}
                   >
-                    <div className='flex justify-end'>{message.content}</div>
+                    <div className='flex justify-end whitespace-pre-wrap'>{message.content}</div>
                     <div className='flex text-muted-foreground text-xs justify-end text-nowrap'>
                       {getMessageTimestamp(message.timestamp)}
                     </div>
@@ -166,7 +166,7 @@ export default function Chat() {
               value={currentValue}
               onKeyDown={(e) => {
                 const keyCode = e.key;
-                if (keyCode === 'Enter') {
+                if (keyCode === 'Enter' && e.ctrlKey) {
                   e.preventDefault();
                   handleSendMessage();
                 }
