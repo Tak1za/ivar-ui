@@ -161,13 +161,13 @@ export default function Chat() {
           <div className='flex justify-stretch flex-col p-7'>
             <Textarea
               ref={textareaRef}
-              className='min-h-0 rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden h-12 max-h-[500px] overflow-y-auto'
+              className='min-h-0 rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-y-auto h-12 max-h-[500px]'
               placeholder='Message'
               onChange={(e) => setCurrentValue(e.target.value)}
               value={currentValue}
               onKeyDown={(e) => {
                 const keyCode = e.key;
-                if (keyCode === 'Enter' && e.ctrlKey) {
+                if (keyCode === 'Enter' && (e.ctrlKey || e.metaKey)) {
                   e.preventDefault();
                   handleSendMessage();
                 }
