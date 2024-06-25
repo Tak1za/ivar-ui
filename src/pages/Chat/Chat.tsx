@@ -1,5 +1,6 @@
 import Loader from '@/components/local/Loader/Loader';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
 import { Message } from '@/core/models/message.interface';
 import { useChatInfo } from '@/core/service/chat/use-get-chat-info';
 import { useIsLoggedIn } from '@/hooks/use-is-logged-in';
@@ -158,9 +159,9 @@ export default function Chat() {
             ))}
           </div>
           <div className='flex justify-stretch flex-col p-7'>
-            <textarea
+            <Textarea
               ref={textareaRef}
-              className='rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden h-12 max-h-[500px] overflow-y-auto'
+              className='min-h-0 rounded-md bg-primary-foreground p-3 pl-5 resize-none overflow-hidden h-12 max-h-[500px] overflow-y-auto'
               placeholder='Message'
               onChange={(e) => setCurrentValue(e.target.value)}
               value={currentValue}
