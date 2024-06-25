@@ -3,6 +3,13 @@ import { useAuth, useUser } from '@clerk/clerk-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCreateUser } from '@/core/service/user/use-create-user';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator
+} from '@/components/ui/context-menu';
 import { Icons } from '@/components/ui/icons';
 import {
   AlertDialog,
@@ -74,10 +81,10 @@ export default function DashboardLayout() {
   return (
     <>
       <div className='h-full min-w-16 max-w-16 bg-secondary'>
-        <div className='flex flex-col h-full py-2 px-1 overflow-y-auto gap-2'>
+        <div className='flex flex-col h-full py-2 px-1 overflow-y-auto items-center'>
           {servers?.data.map((server: Server) => (
-            <Tooltip key={server.id}>
-              <TooltipTrigger>
+            <ContextMenu>
+              <ContextMenuTrigger>
                 <div
                   key={server.id}
                   className='flex flex-row gap-4 p-2 items-center rounded-md hover:bg-secondary hover:cursor-pointer h-14 w-14'
@@ -86,11 +93,13 @@ export default function DashboardLayout() {
                     <AvatarImage src='https://utfs.io/f/b798a2bc-3424-463c-af28-81509ed61caa-o1drm6.png' />
                   </Avatar>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{server.name}</p>
-              </TooltipContent>
-            </Tooltip>
+              </ContextMenuTrigger>
+              <ContextMenuContent className='w-64'>
+                <ContextMenuItem inset>{server.name}</ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem inset>Invite People</ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))}
           <CreateServerButton />
         </div>
